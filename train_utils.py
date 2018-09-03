@@ -13,7 +13,7 @@ class Train:
     
     def __init__(self, architecture, train_dir, val_dir, params):
         
-        self.architecture = architecture
+        self.architecture = architecture.cuda()
         self.train_dir = train_dir
         self.val_dir = val_dir
         self.noise_model = params['noise_model']
@@ -35,6 +35,8 @@ class Train:
             tr_loss = 0
             self.architecture.train(True)
             for _, (source, target) in tqdm(enumerate(self.train_dl)):
+                source = source.cuda()
+                target = target.cuda()
                 _op = self.architecture(Variable(source))
                 _loss = self.loss_fn(_op, Variable(target))
                 tr_loss += _loss
@@ -54,6 +56,8 @@ class Train:
         self.architecture.train(False)
 
         for _, (source, target) in enumerate(self.val_dl):
+            source = source.cuda()
+            target = target.cuda()
             _op = self.architecture(Variable(source))
             _loss = self.loss_fn(_op, Variable(target))
             val_loss += _loss
