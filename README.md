@@ -1,5 +1,5 @@
-# Noise2Noise-Pytorch
-Implementation of NVDIA's Noise2Noise paper in PyTorch for unsupervised denoising and text removal.
+# Deep-Restore-PyTorch
+Deep CNN which learns to restore clean images from noisy image by just looking at noisy images!
 
 ## Introduction
 Image restoration is task in which we have a noisy input image and we desire to get a noise free output image. Several techniques have been proposed for this task. One is using the Light Transport Simulation algorithm, which traces the path of millions of light rays. The disadvantage of this technique is the rendering time. It may take upto hours to render a single scene.</br>
