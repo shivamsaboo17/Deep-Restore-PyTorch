@@ -28,13 +28,12 @@ class NoisyDataset(Dataset):
     
     def _random_crop_to_size(self, imgs):
         w, h = imgs[0].size
-        #assert w >= self.crop_size and h >= self.crop_size, 'Cannot be croppped. Invalid size'
-        if min(w, h) < self.crop_size:
-                imgs[0] = tvF.resize(imgs[0], (self.crop_size, self.crop_size))
+        assert w >= self.crop_size and h >= self.crop_size, 'Cannot be croppped. Invalid size'
+        
 
         cropped_imgs = []
-        i = np.random.randint(0, h - self.crop_size + 1)
-        j = np.random.randint(0, w - self.crop_size + 1)
+        i = np.random.randint(0, h - self.crop_size + 2)
+        j = np.random.randint(0, w - self.crop_size + 2)
 
         for img in imgs:
             if min(w, h) < self.crop_size:

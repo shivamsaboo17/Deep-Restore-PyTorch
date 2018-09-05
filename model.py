@@ -46,5 +46,5 @@ class SRResnet(nn.Module):
     def forward(self, input):
         _op1 = self.act(self.conv1(input))
         _op2 = self.conv2(self.resl(_op1))
-        op = self.conv3(_op1 + _op2)
+        op = self.conv3(torch.add(_op1, _op2))
         return op

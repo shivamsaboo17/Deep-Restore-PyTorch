@@ -33,34 +33,34 @@ class Train:
         
         for _ in range(self.epochs):
             tr_loss = 0
-            self.architecture.train(True)
-            for _, (source, target) in tqdm(enumerate(self.train_dl)):
+            self.architecture.train()
+            for (source, target) in tqdm(self.train_dl):
                 source = source.cuda()
                 target = target.cuda()
                 _op = self.architecture(Variable(source))
                 _loss = self.loss_fn(_op, Variable(target))
-                tr_loss += _loss
+                tr_loss += _loss.data
 
                 self.optimizer.zero_grad()
                 _loss.backward()
                 self.optimizer.step()
             
             val_loss = self.evaluate()
-            self.scheduler.step(val_loss)
+            #self.scheduler.step(val_loss)
             print(f'Training loss = {tr_loss}, Validation loss = {val_loss}')
 
 
     def evaluate(self):
         
         val_loss = 0
-        self.architecture.train(False)
+        self.architecture.eval()
 
         for _, (source, target) in enumerate(self.val_dl):
             source = source.cuda()
             target = target.cuda()
             _op = self.architecture(Variable(source))
             _loss = self.loss_fn(_op, Variable(target))
-            val_loss += _loss
+            val_loss += _loss.data
         
         return val_loss
 
