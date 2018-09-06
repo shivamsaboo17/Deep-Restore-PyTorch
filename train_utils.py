@@ -47,12 +47,12 @@ class Train:
                     source = _list[0]
                     target = _list[-1]
                 _op = self.architecture(Variable(source))
-                if len(_list) == 3:
+                if len(_list) == 4:
                     if self.cuda:
                         mask = Variable(_list[1].cuda())
                     else:
                         mask = Variable(_list[1])
-                    _loss = self.loss_fn(mask * _op, Variable(_list[1]) * Variable(target))
+                    _loss = self.loss_fn(mask * _op, mask * Variable(target))
                 else:
                     _loss = self.loss_fn(_op, Variable(target))
                 tr_loss += _loss.data
@@ -79,12 +79,12 @@ class Train:
                 source = _list[0]
                 target = _list[-1]
             _op = self.architecture(Variable(source))
-            if len(_list == 3):
+            if len(_list) == 4:
                 if self.cuda:
                     mask = Variable(_list[1].cuda())
                 else:
                     mask = Variable(_list[1])
-                _loss = self.loss_fn(mask * _op, Variable(_list[1]) * target)
+                _loss = self.loss_fn(mask * _op, mask * Variable(target))
             else:
                 _loss = self.loss_fn(_op, Variable(target))
             val_loss += _loss.data

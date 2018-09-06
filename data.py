@@ -9,7 +9,7 @@ from random import choice
 from string import ascii_letters
 import os
 import scipy
-
+import random
 
 class NoisyDataset(Dataset):
     
@@ -62,14 +62,19 @@ class NoisyDataset(Dataset):
         Added poisson Noise
         """
         noise_mask = np.random.poisson(np.array(image))
-        return {'image':noise_mask, 'mask': None, 'use_mask': False}
+        #print(noise_mask.dtype)
+        #print(noise_mask)
+        return {'image':noise_mask.astype(np.uint8), 'mask': None, 'use_mask': False}
 
     def _add_m_bernoulli_noise(self, image):
         """
         Multiplicative bernoulli
         """
-        mask = np.random.choice([0, 1], size=np.array(image).shape, p=[self.noise_param, 1 - self.noise_param])
-        return {'image':np.multiply(image, mask), 'mask':mask, 'use_mask': True}
+        sz = np.array(image).shape[0]
+        prob_ = random.uniform(0, self.noise_param)
+        mask = np.random.choice([0, 1], size=(sz, sz), p=[prob_, 1 - prob_])
+        mask = np.repeat(mask[:, :, np.newaxis], 3, axis=2)
+        return {'image':np.multiply(image, mask).astype(np.uint8), 'mask':mask.astype(np.uint8), 'use_mask': True}
 
 
     def _add_text_overlay(self, image):
@@ -109,7 +114,7 @@ class NoisyDataset(Dataset):
             mask_draw.text(pos, chars, 1, font=font)
             if get_occupancy(mask_img) > max_occupancy:
                 break
-
+        
         return {'image':text_img, 'mask':None, 'use_mask': False}
 
     def corrupt_image(self, image):
@@ -141,7 +146,7 @@ class NoisyDataset(Dataset):
         if source_img_dict['use_mask']:
             source_img_dict['mask'] = tvF.to_tensor(source_img_dict['mask'])
 
-        if self.clean_targ:
+        if self.clean_targ or self.noise:
             target = tvF.to_tensor(image)
         else:
             _target_dict = self.corrupt_image(image)
