@@ -22,6 +22,7 @@ Here comes a novel technique to address this issue. This method uses only noisy 
 ![](imgs/index2.png) ![](imgs/index.png)</br>
 ### Poisson Noise Removal
 ![](imgs/index6.png) ![](imgs/index5.png)
+#### Note: I am not yet sure about how poisson noise needs to be implemented because it's not additive and is signal dependent while the paper simply mentions using a constant lambda.</br>
 
 #### The minor artifacts seen are due to the following
 1. Only 291 images were used for training.
