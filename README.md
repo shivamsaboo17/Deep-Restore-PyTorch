@@ -14,7 +14,7 @@ It works. Works pretty well indeed. But there are cases where it is not just exp
 Here comes a novel technique to address this issue. This method uses only noisy images to train the neural network to produce clean image as output. No clean images are required whatsoever for this technique.
 
 ## A Few Samples
-## Multiplicative Bernoulli Noise Removal
+### Multiplicative Bernoulli Noise Removal
 ![](imgs/index8.png) ![](imgs/index7.png)
 ### Gaussian Noise Removal
 ![](imgs/index4.png) ![](imgs/index3.png)
