@@ -14,10 +14,14 @@ It works. Works pretty well indeed. But there are cases where it is not just exp
 Here comes a novel technique to address this issue. This method uses only noisy images to train the neural network to produce clean image as output. No clean images are required whatsoever for this technique.
 
 ## A Few Samples
+## Multiplicative Bernoulli Noise Removal
+![](imgs/index8.png) ![](imgs/index7.png)
 ### Gaussian Noise Removal
 ![](imgs/index4.png) ![](imgs/index3.png)
 ### Corrupt Text Removal
-![](imgs/index2.png) ![](imgs/index.png)
+![](imgs/index2.png) ![](imgs/index.png)</br>
+### Poisson Noise Removal
+![](imgs/index6.png) ![](imgs/index5.png)
 
 #### The minor artifacts seen are due to the following
 1. Only 291 images were used for training.
