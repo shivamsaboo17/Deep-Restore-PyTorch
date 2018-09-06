@@ -13,7 +13,11 @@ class Train:
     
     def __init__(self, architecture, train_dir, val_dir, params):
         
-        self.architecture = architecture.cuda()
+        self.cuda = params['cuda']
+        if self.cuda:
+            self.architecture = architecture.cuda()
+        else:
+            self.architecture = architecture
         self.train_dir = train_dir
         self.val_dir = val_dir
         self.noise_model = params['noise_model']
@@ -22,6 +26,7 @@ class Train:
         self.lr = params['lr']
         self.epochs = params['epochs']
         self.bs = params['bs']
+        
 
         self.train_dl, self.val_dl = self.__getdataset__()
         self.optimizer = self.__getoptimizer__()
@@ -34,11 +39,18 @@ class Train:
         for _ in range(self.epochs):
             tr_loss = 0
             self.architecture.train()
-            for (source, target) in tqdm(self.train_dl):
-                source = source.cuda()
-                target = target.cuda()
+            for _list in tqdm(self.train_dl):
+                if self.cuda:
+                    source = _list[0].cuda()
+                    target = _list[-1].cuda()
+                else:
+                    source = _list[0]
+                    target = _list[-1]
                 _op = self.architecture(Variable(source))
-                _loss = self.loss_fn(_op, Variable(target))
+                if len(_list) == 3:
+                    _loss = self.loss_fn(Variable(_list[1]) * _op, Variable(_list[1]) * Variable(target))
+                else:
+                    _loss = self.loss_fn(_op, Variable(target))
                 tr_loss += _loss.data
 
                 self.optimizer.zero_grad()
@@ -55,11 +67,18 @@ class Train:
         val_loss = 0
         self.architecture.eval()
 
-        for _, (source, target) in enumerate(self.val_dl):
-            source = source.cuda()
-            target = target.cuda()
+        for _, _list in enumerate(self.val_dl):
+            if self.cuda:
+                source = _list[0].cuda()
+                target = _list[-1].cuda()
+            else:
+                source = _list[0]
+                target = _list[-1]
             _op = self.architecture(Variable(source))
-            _loss = self.loss_fn(_op, Variable(target))
+            if len(_list == 3):
+                _loss = self.loss_fn(Variable(_list[1]) * _op, Variable(_list[1]) * target)
+            else:
+                _loss = self.loss_fn(_op, Variable(target))
             val_loss += _loss.data
         
         return val_loss

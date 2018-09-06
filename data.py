@@ -8,6 +8,7 @@ from sys import platform
 from random import choice
 from string import ascii_letters
 import os
+import scipy
 
 
 class NoisyDataset(Dataset):
@@ -42,20 +43,34 @@ class NoisyDataset(Dataset):
 
         return cropped_imgs
     
-    def _add_noise(self, image):
+    def _add_gaussian_noise(self, image):
         """
         Added only gaussian noise
         """
         w, h = image.size
         c = len(image.getbands())
-
-        if self.noise == 'gaussian':
-            std = np.random.uniform(0, self.noise_param)
-            _n = np.random.normal(0, std, (h, w, c))
-            noisy_image = np.array(image) + _n
+        
+        std = np.random.uniform(0, self.noise_param)
+        _n = np.random.normal(0, std, (h, w, c))
+        noisy_image = np.array(image) + _n
         
         noisy_image = np.clip(noisy_image, 0, 255).astype(np.uint8)
-        return Image.fromarray(noisy_image)
+        return {'image':Image.fromarray(noisy_image), 'mask': None, 'use_mask': False}
+
+    def _add_poisson_noise(self, image):
+        """
+        Added poisson Noise
+        """
+        noise_mask = np.random.poisson(np.array(image))
+        return {'image':noise_mask, 'mask': None, 'use_mask': False}
+
+    def _add_m_bernoulli_noise(self, image):
+        """
+        Multiplicative bernoulli
+        """
+        mask = np.random.choice([0, 1], size=np.array(image).shape, p=[self.noise_param, 1 - self.noise_param])
+        return {'image':np.multiply(image, mask), 'mask':mask, 'use_mask': True}
+
 
     def _add_text_overlay(self, image):
         """
@@ -95,12 +110,16 @@ class NoisyDataset(Dataset):
             if get_occupancy(mask_img) > max_occupancy:
                 break
 
-        return text_img
+        return {'image':text_img, 'mask':None, 'use_mask': False}
 
     def corrupt_image(self, image):
         
         if self.noise == 'gaussian':
-            return self._add_noise(image)
+            return self._add_gaussian_noise(image)
+        elif self.noise == 'poisson':
+            return self._add_poisson_noise(image)
+        elif self.noise == 'multiplicative_bernoulli':
+            return self._add_m_bernoulli_noise(image)
         elif self.noise == 'text':
             return self._add_text_overlay(image)
         else:
@@ -113,18 +132,25 @@ class NoisyDataset(Dataset):
         img_path = os.path.join(self.root_dir, self.imgs[index])
         image = Image.open(img_path).convert('RGB')
 
-
         if self.crop_size > 0:
             image = self._random_crop_to_size([image])[0]
 
-        source_img = tvF.to_tensor(self.corrupt_image(image))
+        source_img_dict = self.corrupt_image(image)
+        source_img_dict['image'] = tvF.to_tensor(source_img_dict['image'])
+
+        if source_img_dict['use_mask']:
+            source_img_dict['mask'] = tvF.to_tensor(source_img_dict['mask'])
 
         if self.clean_targ:
             target = tvF.to_tensor(image)
         else:
-            target = tvF.to_tensor(self.corrupt_image(image))
+            _target_dict = self.corrupt_image(image)
+            target = tvF.to_tensor(_target_dict['image'])
 
-        return source_img, target
+        if source_img_dict['use_mask']:
+            return [source_img_dict['image'], source_img_dict['mask'], target]
+        else:
+            return [source_img_dict['image'], target]
 
     def __len__(self):
         return len(self.imgs)
