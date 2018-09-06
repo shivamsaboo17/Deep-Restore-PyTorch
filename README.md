@@ -21,7 +21,7 @@ Here comes a novel technique to address this issue. This method uses only noisy 
 
 #### The minor artifacts seen are due to the following
 1. Only 291 images were used for training.
-2. The images were random cropped to 64 x 64 for quick training.
+2. The images were random cropped to 64 x 64 for quick training.</br>
 Progressive resizing could be incorporated along with more images to get high resolution results.
 
 ## How does this even work?
@@ -31,4 +31,6 @@ When L is squared error, we find minimum is found at arithmetic mean of our inpu
 Given a loss function L, we minimize the loss with input datapoints (noisy images) to learn a function N, where N is a Convolutional Neural Network. This allows the network to generate noise free images as we learn the function N. </br>
 This effectively reduces our task of training our neural network model with only noisy/corrupted images.
 
- 
+## References:
+![Noise2Noise Paper](https://arxiv.org/abs/1803.04189)
+
