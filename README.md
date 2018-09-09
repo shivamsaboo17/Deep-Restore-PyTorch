@@ -37,5 +37,5 @@ Given a loss function L, we minimize the loss with input datapoints (noisy image
 This effectively reduces our task of training our neural network model with only noisy/corrupted images.
 
 ## References:
-![Noise2Noise Paper](https://arxiv.org/abs/1803.04189)
+[Noise2Noise Paper](https://arxiv.org/pdf/1803.04189.pdf)
 
