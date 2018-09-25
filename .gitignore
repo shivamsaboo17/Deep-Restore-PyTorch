@@ -1,0 +1,8 @@
+aerials/
+train-jpg/
+imgs/
+*.tar
+*.7z.tar
+*.tar.7z
+*.zip
+

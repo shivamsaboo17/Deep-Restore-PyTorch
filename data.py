@@ -10,6 +10,7 @@ from string import ascii_letters
 import os
 import scipy
 import random
+import cv2
 
 class NoisyDataset(Dataset):
     
@@ -28,6 +29,7 @@ class NoisyDataset(Dataset):
 
     
     def _random_crop_to_size(self, imgs):
+        
         w, h = imgs[0].size
         assert w >= self.crop_size and h >= self.crop_size, 'Cannot be croppped. Invalid size'
         
@@ -40,7 +42,8 @@ class NoisyDataset(Dataset):
             if min(w, h) < self.crop_size:
                 img = tvF.resize(img, (self.crop_size, self.crop_size))
             cropped_imgs.append(tvF.crop(img, i, j, self.crop_size, self.crop_size))
-
+        
+        #cropped_imgs = cv2.resize(np.array(imgs[0]), (self.crop_size, self.crop_size))
         return cropped_imgs
     
     def _add_gaussian_noise(self, image):
@@ -146,9 +149,11 @@ class NoisyDataset(Dataset):
         if source_img_dict['use_mask']:
             source_img_dict['mask'] = tvF.to_tensor(source_img_dict['mask'])
 
-        if self.clean_targ or self.noise:
+        if self.clean_targ:
+            #print('clean target')
             target = tvF.to_tensor(image)
         else:
+            #print('corrupt target')
             _target_dict = self.corrupt_image(image)
             target = tvF.to_tensor(_target_dict['image'])
 
