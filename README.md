@@ -1,5 +1,5 @@
 # Deep-Restore-PyTorch
-Deep CNN for learning image restoration without clean data!
+Deep CNN for learning image restoration without clean data! (Noise2Noise)
 
 ## Introduction
 Image restoration is task in which we have a noisy input image and we desire to get a noise free output image. Several techniques have been proposed for this task. One is using the Light Transport Simulation algorithm, which traces the path of millions of light rays. The disadvantage of this technique is the rendering time. It may take upto hours to render a single scene.</br>
@@ -29,12 +29,6 @@ Here comes a novel technique to address this issue. This method uses only noisy 
 2. The images were random cropped to 64 x 64 for quick training.</br>
 Progressive resizing could be incorporated along with more images to get high resolution results.
 
-## How does this even work?
-Assume that we have a set of unreliable measurements (y1, y2, y3...) of the room temperature. A common strategy for estimating the true unknown temperature is to find a number z that has smallest average deviation from our input data points, according to some loss function L. </br>
-When L is squared error, we find minimum is found at arithmetic mean of our input data points. Similarly when L is L1 loss, we find the minimum to be at the median of our input data points.</br>
-#### We use similar analogy here to train our neural network.
-Given a loss function L, we minimize the loss with input datapoints (noisy images) to learn a function N, where N is a Convolutional Neural Network. This allows the network to generate noise free images as we learn the function N. </br>
-This effectively reduces our task of training our neural network model with only noisy/corrupted images.
 
 ## References:
 [Noise2Noise Paper](https://arxiv.org/pdf/1803.04189.pdf)
